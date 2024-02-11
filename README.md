@@ -6,6 +6,8 @@ This was proposed and developed as an independent 2024 winter quarter research p
 
 ROS2 package for a ROV to autonomously navigate waypoints and avoid obstacles underwater.
 
+![btest](https://github.com/ishani-narwankar/nemo_auv/assets/42013894/ae804de7-0491-43ce-803a-b019aff8de04)
+
 <!-- ## Project Goals
 - Fallback goals:
 - Core goals:
