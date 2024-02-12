@@ -1,0 +1,5 @@
+<launch>
+    <!-- launch camera_feed node -->
+    <node pkg="nemo_auv" exec="camera_feed" name="camera_feed" />
+    
+</launch>

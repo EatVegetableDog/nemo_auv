@@ -1,3 +1,10 @@
+"""Node to publish video frames to the video_frames topic.
+
+Returns:
+    _type_: _description_
+"""
+
+
 import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import Image
@@ -13,23 +20,17 @@ from ament_index_python.packages import get_package_share_path
 
 class CameraFeed(Node):
     """
-    Create an CameraPublisher class, which is a subclass of the Node class.
+    Class to create a node that publishes video frames to the video_frames topic
     """
     def __init__(self):
         """
         Class constructor to set up the node
         """
         # Initiate the Node class's constructor and give it a name
-        super().__init__('auv_camera')
+        super().__init__('camera_feed')
             
-        # Get camera parameters
-        # self.declare_parameter("auv_cam_yaml", "/home/oubre/auv_ws/src/halo_auv/config/auv_cam_params.yaml", ParameterDescriptor(
-        #     description="Path to camera parameter yaml file"))
-        # self.camera_params = self.get_parameter(
-        #     "auv_cam_yaml").get_parameter_value().string_value
-
-        # Path for the calibration file
-        self.package_path = get_package_share_path('halo_auv')
+        # Path for the camera calibration yaml file
+        self.package_path = get_package_share_path('nemo_auv')
         self.camera_params = str(self.package_path) + '/auv_cam_params.yaml'
 
         # Create camera info message
@@ -234,7 +235,7 @@ def main(args=None):
     rclpy.init(args=args)
 
     # Create the node
-    image_publisher = CameraPublisher()
+    image_publisher = CameraFeed()
 
     # Spin the node so the callback function is called.
     rclpy.spin(image_publisher)
