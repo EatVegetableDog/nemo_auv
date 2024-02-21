@@ -10,7 +10,9 @@ setup(
         ('share/ament_index/resource_index/packages',
          ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml',
-                                    'config/auv_cam_params.yaml',]),
+                                    'config/auv_cam_params.yaml',
+                                    'launch/start_camera.launch.xml',
+                                    'config/video.rviz']),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -20,6 +22,7 @@ setup(
     license='MIT',
     tests_require=['pytest'],
     entry_points={
-        'console_scripts': ['camera_feed = nemo_auv.camera_feed:main',],
+        'console_scripts': ['camera_feed = nemo_auv.camera_feed:main',
+                            'depth_control = nemo_auv.depth_control:main'],
     },
 )
