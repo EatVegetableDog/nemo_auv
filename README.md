@@ -9,8 +9,6 @@ This was proposed and developed as an independent 2024 winter quarter research p
 
 ROS2 package for a ROV to autonomously navigate waypoints and avoid obstacles underwater.
 
-![btest](https://github.com/ishani-narwankar/nemo_auv/assets/42013894/ae804de7-0491-43ce-803a-b019aff8de04)
-
 ## Goals
 
 - Improve mechanical and electrical design of low-cost AUV
@@ -31,6 +29,7 @@ In order to accomplish this, I have ported a ros1 SLAM package (ORB_SLAM2) to wo
 You can find the info on how I set that up here: https://github.com/ishani-narwankar/orbslam_iron_nemo
 
 
+![btest](https://github.com/ishani-narwankar/nemo_auv/assets/42013894/ae804de7-0491-43ce-803a-b019aff8de04)
 
 <!-- ## Project Goals
 - Fallback goals:
