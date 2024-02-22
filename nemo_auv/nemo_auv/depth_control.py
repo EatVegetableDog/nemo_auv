@@ -45,7 +45,6 @@ class DepthControl(Node):
         self.current_heading = self.get_heading()
 
         # Initialize target positions for depth and heading
-        # self.target_depth = self.current_depth
         self.target_depth = 0
         self.target_heading = self.current_heading
         self.target_x = 0
@@ -93,64 +92,8 @@ class DepthControl(Node):
 
         # Update current position everytime you read depth
         self.depth_msg.z = msg.to_dict()["relative_alt"]
-        # self.get_logger().error(f'Current depth {msg.to_dict()["relative_alt"]}')
-        # if msg is not None:
-        #     self.get_logger().error(
-        #         f'MESSAGE RECEIVED!!!!!!!!!!!!!!!!!!!!!!!!! {msg.to_dict()["relative_alt"]}'
-        #     )
-
-        #     if "relative_alt" in msg:
-
-        #         # if msg.get_type() == 'GLOBAL_POSITION_INT':
-        #         #     read_flag = False
-        #         # Update current position everytime you read depth
-        #         self.get_logger().error(
-        #             f'Current depth {msg.to_dict()["relative_alt"]}')
-        #         self.depth_msg.z = msg.to_dict()["relative_alt"]
-
-        # self.get_logger().info(f'Target heading {self.target_heading}')
-        # self.get_logger().info(f'Current heading {self.current_heading}')
-
-        # Publish depth data
+        
         self.depth_pub.publish(self.depth_msg)
-        # Calculate state error
-        # depth_err = self.target_depth - 0
-        # self.target_heading = self.wrap_angle(self.target_heading)
-        # heading_err = self.target_heading - self.get_heading()
-        # # self.get_logger().info(f' Error heading {heading_err}')
-        # x_error = self.target_x - 0.15  # 0.15 is a buffer so you dont hit wall
-
-        # # Calculate integral error
-        # self.depth_err_sum += depth_err
-        # if (self.depth_err_sum > 100):
-        #     self.depth_err_sum = 100
-        # if (self.depth_err_sum < -100):
-        #     self.depth_err_sum = -100
-
-        # self.heading_err_sum += heading_err
-        # if (self.heading_err_sum > 20):
-        #     self.heading_err_sum = 20
-        # if (self.heading_err_sum < -20):
-        #     self.heading_err_sum = -20
-
-        # #  If error is sufficently small, reset integral error
-        # if (isclose(depth_err, 0.0, abs_tol=10)):
-        #     self.depth_err_sum = 0.0
-
-        # if (isclose(heading_err, 0.0, abs_tol=3)):
-        #     self.heading_err_sum = 0.0
-
-        # # Calculate verticle throttle
-        # depth_throttle = 500 + self.Kp_depth * depth_err + self.Ki_depth * self.depth_err_sum
-
-        # # Caclulate rotational throttle
-        # rot_throttle = self.Kp_a * heading_err + self.Ki_a * self.heading_err_sum
-
-        # # Run x controller at slower frequency because ... TODO
-        # x_throttle = self.Kp_x * x_error
-
-        # # From rotational throttle, edit x and y throttle to achieve rotation -> shouldnt have to do this
-        # self.send_cmd(x_throttle, depth_throttle, rot_throttle)
 
     def get_depth(self):
         """Get depth from barometer.
