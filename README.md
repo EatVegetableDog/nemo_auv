@@ -22,7 +22,7 @@ ROS2 package for a ROV to autonomously navigate waypoints and avoid obstacles un
 - Obstacle avoidance
 
 ## Mapping with SLAM
-I am using Simulated Learning and Mapping (SLAM) to create a map of the underwater environment. 
+I am using Simultaneous Localization and Mapping (SLAM) to create a map of the underwater environment. 
 
 In order to accomplish this, I have ported a ros1 SLAM package (ORB_SLAM2) to work with ros2 iron (which I have running on my computer). 
 
