@@ -21,7 +21,7 @@ class DepthControl(Node):
     """
     """
 
-    def __init__(self):
+    def __init__(self, joystick_device='/dev/input/js0'):
         """
         Class constructor to set up the node
         """
@@ -34,6 +34,9 @@ class DepthControl(Node):
 
         # Wait a heartbeat before sending commands
         self.master.wait_heartbeat()
+
+        # set joystick
+        self.joystick_device = joystick_device
 
         # Initialize mode
         self.set_mode()
@@ -97,6 +100,22 @@ class DepthControl(Node):
         self.depth_msg.z = msg.to_dict()["relative_alt"]
 
         self.depth_pub.publish(self.depth_msg)
+
+        try:
+            joystick_inputs = dict(self.get_joystick_inputs())
+            throttle, roll, pitch, yaw, buttons = self.map_joystick_to_manual_control(joystick_inputs)
+
+            # Send MANUAL_CONTROL message
+            self.master.mav.manual_control_send(
+                self.master.target_system,
+                roll,
+                pitch,
+                throttle,
+                yaw,
+                buttons)
+
+        except Exception as e:
+            self.get_logger().error(f"Error in timer_callback: {str(e)}")
 
     def get_depth(self):
         """Get depth from barometer.
@@ -231,6 +250,23 @@ class DepthControl(Node):
             wrapped_angle += 360.0
         return wrapped_angle
 
+    def get_joystick_inputs(self):
+        events = inputs.get_key()
+        for event in events:
+            if event.ev_type == 'Absolute':
+                yield event.ev_code, event.ev_value
+
+    def map_joystick_to_manual_control(self, inputs):
+        # Example mapping: adjust based on your controller layout
+        throttle = int(1500 + 500 * inputs.get('ABS_Y', 0) / 32767 if 'ABS_Y' in inputs else 0)
+        roll = int(1500 + 500 * inputs.get('ABS_X', 0) / 32767 if 'ABS_X' in inputs else 0)
+        pitch = int(1500 + 500 * inputs.get('ABS_RY', 0) / 32767 if 'ABS_RY' in inputs else 0)
+        yaw = int(1500 + 500 * inputs.get('ABS_RX', 0) / 32767 if 'ABS_RX' in inputs else 0)
+        buttons = 0  # Add button mappings as needed
+
+        return throttle, roll, pitch, yaw, buttons
+
+
 
 def main(args=None):
 
@@ -238,7 +274,7 @@ def main(args=None):
     rclpy.init(args=args)
 
     # Create the node
-    depth_control_node = DepthControl()
+    depth_control_node = DepthControl(joystick_device='/dev/input/js0')
 
     # Spin the node so the callback function is called.
     rclpy.spin(depth_control_node)
