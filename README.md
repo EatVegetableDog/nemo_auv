@@ -1,5 +1,8 @@
 # Nemo_AUV Package for Manual and Autonomous Control of Autonomous Underwater Vehicle (AUV)
 
+- Author: Ishani Narwankar
+- Portfolio Post: https://ishani-narwankar.github.io/projects/01-auv
+
 ## Project Brief:
 
 In 10 weeks, I updated a low-cost underwater vehicle, ported an existing feature-based visual SLAM package into ROS2 Iron, tuned it for use in an underwater environment, and developed a ROS2 package that interfaces with ArduSub to autonomously navigate waypoints underwater. You can read more about this project here: https://ishani-narwankar.github.io/projects/01-auv
