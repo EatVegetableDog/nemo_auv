@@ -4,7 +4,7 @@
 
 In 10 weeks, I updated a low-cost underwater vehicle, ported an existing feature-based visual SLAM package into ROS2 Iron, tuned it for use in an underwater environment, and developed a ROS2 package that interfaces with ArduSub to autonomously navigate waypoints underwater. You can read more about this project here: https://ishani-narwankar.github.io/projects/01-auv
 
-ROS2 package for a ROV to autonomously navigate waypoints and avoid obstacles underwater.
+ROS2 package for a ROV to autonomously navigate waypoints in RVIZ and in real underwater environment using SLAM generated map.
 
 ## Package Dependencies:
 ### ORB SLAM 2
