@@ -1,7 +1,7 @@
 # Nemo_AUV Package for Manual and Autonomous Control of Autonomous Underwater Vehicle (AUV)
 
 - Author: Ishani Narwankar
-- Portfolio Post: https://ishani-narwankar.github.io/projects/01-auv
+- [Portfolio Post](https://ishani-narwankar.github.io/projects/01-auv)
 
 ## Project Brief:
 
