@@ -1,0 +1,13 @@
+<launch>
+
+    <node pkg="nemo_auv" exec="depth_control" />
+
+    <!-- launch camera_feed node -->
+    <node pkg="nemo_auv" exec="camera_feed" name="camera_feed">
+        <remap from="video_frames" to="/camera"/>
+        <remap from="camera_info" to="/camera/camera_info"/>
+    </node>
+
+    <node pkg="rviz2" exec="rviz2" args="-d $(find-pkg-share nemo_auv)/video.rviz"/>
+
+</launch>

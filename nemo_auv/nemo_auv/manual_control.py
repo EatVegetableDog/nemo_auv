@@ -17,72 +17,28 @@ import time
 import inputs
 
 
-class DepthControl(Node):
+class ManualControl(Node):
     """
     """
 
-    def __init__(self, joystick_device='/dev/input/js0'):
+    def __init__(self):
         """
         Class constructor to set up the node
         """
         # Initiate the Node class's constructor and give it a name
-        super().__init__('depth_control')
+        super().__init__('manual_control')
 
         # ===== Set up Mavlink Comms ===== #
         # Create the connection to the top-side computer as companion computer/autopilot
-        self.master = mavutil.mavlink_connection('udpin:0.0.0.0:14550')
+        self.master = mavutil.mavlink_connection('udpin:0.0.0.0:14551')
 
         # Wait a heartbeat before sending commands
         self.master.wait_heartbeat()
 
-        # set joystick
-        self.joystick_device = joystick_device
-
         # Initialize mode
-        self.set_mode()
+        # self.set_mode()
 
         self.arm()
-
-        # Save depth and have a class variable to keep track of depth
-        self.depth_msg = Depth()
-        self.depth_msg.z = 0
-
-        # # Save heading and have a class variable to keep track of heading (degrees)
-        self.current_heading = self.get_heading()
-
-        # Initialize target positions for depth and heading
-        self.target_depth = 0
-        self.target_heading = self.current_heading
-        self.target_x = 0
-
-        # Set PI gains for depth
-        self.Kp_depth = 2.0
-        self.Ki_depth = 0.01
-
-        # Set PI gains for angle
-        self.Kp_a = 20.0
-        self.Ki_a = 0.03
-
-        # Set PI gains for x
-        self.Kp_x = 1.0
-        self.Ki_x = 0.01
-
-        # Initialize integral error
-        self.heading_err_sum = 0.0
-        self.depth_err_sum = 0.0
-
-        # Create a service to move change target postion values
-        self.set_pose = self.create_service(AuvPose, "set_relative_pos",
-                                            self.set_pose_cb)
-        self.set_pose_abs = self.create_service(AuvPose, "set_absolute_pose",
-                                                self.set_abs_pose_cb)
-
-        # Create a 200 hz timer
-        self.timer_cnt = 0
-        self.timer = self.create_timer(0.005, self.timer_callback)
-
-        # Create a publisher for depth data
-        self.depth_pub = self.create_publisher(Depth, "depth", 10)
 
     def timer_callback(self):
         self.timer_cnt += 1
@@ -99,102 +55,12 @@ class DepthControl(Node):
         # Update current position everytime you read depth
         self.depth_msg.z = msg.to_dict()["relative_alt"]
 
-        self.depth_pub.publish(self.depth_msg)
+        # self.depth_pub.publish(self.depth_msg)
 
-        try:
-            joystick_inputs = dict(self.get_joystick_inputs())
-            throttle, roll, pitch, yaw, buttons = self.map_joystick_to_manual_control(joystick_inputs)
-
-            # Send MANUAL_CONTROL message
-            self.master.mav.manual_control_send(
-                self.master.target_system,
-                roll,
-                pitch,
-                throttle,
-                yaw,
-                buttons)
-
-        except Exception as e:
-            self.get_logger().error(f"Error in timer_callback: {str(e)}")
-
-    def get_depth(self):
-        """Get depth from barometer.
-
-        Returns:
-            float: Robot's current depth
-        """
-        # print("Waiting for depth reading")
-        read_flag = True
-        while read_flag:
-            msg = self.master.recv_match()
-            self.get_logger().error(f'11111111: Current depth {msg}')
-            if not msg:
-                continue
-            if msg.get_type() == 'GLOBAL_POSITION_INT':
-                read_flag = False
-
-        # Update current position everytime you read depth
-        self.get_logger().error(f'Current depth {msg}')
-        # self.current_depth = msg.to_dict()["RELATIVE_ALT"]
-
-        # return self.current_depth
-
-    def get_heading(self):
-        """Get depth from barometer.
-
-        Returns:
-            float: Robot's current depth
-        """
-        # print("Waiting for depth reading")
-        read_flag = True
-        while read_flag:
-            msg = self.master.recv_match()
-            if not msg:
-                continue
-            if msg.get_type() == 'VFR_HUD':
-                read_flag = False
-
-        # Update current position everytime you read depth
-        self.current_heading = self.wrap_angle(msg.to_dict()["heading"])
-        return self.current_heading
-
-    def send_cmd(self, x_throttle, z_throttle, r_throttle):
-        y_throttle = 0.0
-
-        # Bound z throttle
-        if (isclose(0, 0.0, abs_tol=30)):
-            z_throttle = 500
-
-        if (z_throttle > 1000):
-            z_throttle = 1000
-        if (z_throttle < 0):
-            z_throttle = 0
-
-        # Bound x throttle
-        if (x_throttle > 1000):
-            x_throttle = 1000
-        if (x_throttle < -1000):
-            x_throttle = -1000
-
-        # Bound rotation throttle
-        if (r_throttle > 1000):
-            r_throttle = 1000
-        if (r_throttle < -1000):
-            r_throttle = -1000
-
-        if (r_throttle < 0):  # If throttle negative ->CCW
-            x_throttle += r_throttle
-            y_throttle -= r_throttle
-            # x_throttle -= r_throttle
-            # y_throttle += r_throttle
-        else:
-            x_throttle += r_throttle
-            y_throttle -= r_throttle
-
-        # Send commmand to robot
-        self.master.mav.manual_control_send(self.master.target_system,
-                                            int(x_throttle), int(y_throttle),
-                                            int(z_throttle), 0, 0)
+        self.set_rc_channel_pwm(2, 1500)
+        self.set_rc_channel_pwm(3, 1500)
+        self.set_rc_channel_pwm(4, 1500)
+        self.set_rc_channel_pwm(5, 1500)
 
     def arm(self):
         """Arm the robot.
@@ -232,39 +98,25 @@ class DepthControl(Node):
             self.master.target_system,
             mavutil.mavlink.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED, mode_id)
 
-    def set_pose_cb(self, request, response):
-        self.target_depth += request.depth
-        self.target_heading += request.heading
-        self.target_x += request.x
-        return response
+    def set_rc_channel_pwm(self, channel_id, pwm=1500):
+        """ Set RC channel pwm value
+        Args:
+            channel_id (TYPE): Channel ID
+            pwm (int, optional): Channel pwm value 1100-1900
+        """
+        if channel_id < 1 or channel_id > 18:
+            print("Channel does not exist.")
+            return
 
-    def set_abs_pose_cb(self, request, response):
-        self.target_depth = request.depth
-        self.target_heading = request.heading
-        self.target_x = request.x
-        return response
+        # Mavlink 2 supports up to 18 channels:
+        # https://mavlink.io/en/messages/common.html#RC_CHANNELS_OVERRIDE
+        rc_channel_values = [65535 for _ in range(18)]
+        rc_channel_values[channel_id - 1] = pwm
+        self.master.mav.rc_channels_override_send(self.master.target_system,
+                                                  self.master.target_component,
+                                                  *rc_channel_values)
 
-    def wrap_angle(self, angle):
-        wrapped_angle = math.fmod(angle, 360.0)
-        if wrapped_angle < 0:
-            wrapped_angle += 360.0
-        return wrapped_angle
 
-    def get_joystick_inputs(self):
-        events = inputs.get_key()
-        for event in events:
-            if event.ev_type == 'Absolute':
-                yield event.ev_code, event.ev_value
-
-    def map_joystick_to_manual_control(self, inputs):
-        # Example mapping: adjust based on your controller layout
-        throttle = int(1500 + 500 * inputs.get('ABS_Y', 0) / 32767 if 'ABS_Y' in inputs else 0)
-        roll = int(1500 + 500 * inputs.get('ABS_X', 0) / 32767 if 'ABS_X' in inputs else 0)
-        pitch = int(1500 + 500 * inputs.get('ABS_RY', 0) / 32767 if 'ABS_RY' in inputs else 0)
-        yaw = int(1500 + 500 * inputs.get('ABS_RX', 0) / 32767 if 'ABS_RX' in inputs else 0)
-        buttons = 0  # Add button mappings as needed
-
-        return throttle, roll, pitch, yaw, buttons
 
 
 
@@ -274,13 +126,13 @@ def main(args=None):
     rclpy.init(args=args)
 
     # Create the node
-    depth_control_node = DepthControl(joystick_device='/dev/input/js0')
+    manual_control_node = ManualControl()
 
     # Spin the node so the callback function is called.
-    rclpy.spin(depth_control_node)
+    rclpy.spin(manual_control_node)
 
     # Destroy the node explicitly
-    depth_control_node.destroy_node()
+    manual_control_node.destroy_node()
 
     # Shutdown the ROS client library for Python
     rclpy.shutdown()

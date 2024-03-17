@@ -13,7 +13,8 @@ setup(
                                     'config/auv_cam_params.yaml',
                                     'launch/start_camera.launch.xml',
                                     'config/video.rviz',
-                                    'launch/nemo_slam.launch.xml',]),
+                                    'launch/nemo_slam.launch.xml',
+                                    'launch/manual.launch.xml',]),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -24,6 +25,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': ['camera_feed = nemo_auv.camera_feed:main',
-                            'depth_control = nemo_auv.depth_control:main'],
+                            'depth_control = nemo_auv.depth_control:main',
+                            'manual_control = nemo_auv.manual_control:main',
+                            'cube_control = nemo_auv.cube_control:main',],
     },
 )

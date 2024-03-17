@@ -1,0 +1,5 @@
+<launch>
+
+    <node pkg="nemo_auv" exec="manual_control" name="manual_control"/>
+
+</launch>
