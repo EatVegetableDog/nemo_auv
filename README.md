@@ -24,7 +24,7 @@ In order to accomplish this, I have ported a ros1 SLAM package (ORB_SLAM2) to wo
 
 ## Quickstart for Generating Map of Underwater Environment Live on AUV:
 ### Terminal 1
-Run ros2 ORB SLAM package. Note that the camera configuration files that I created from tuned camera calibrations (in air and underwater) and multiple pool tests are available in the config directory. (I used the InPool.yaml for the best and most accurate live map generation results)
+Run ros2 ORB SLAM package. Note that the camera configuration files that I created from tuned camera calibrations (in air and underwater) and multiple pool tests are available in the config directory within the nemo_auv directory. (I used the InPool.yaml for the best and most accurate live map generation results)
 1. source `orbslam` workspace
 2. ```ros2 run ros2_orbslam mono ~/ws/orbslam/src/ORB_SLAM2/Vocabulary/ORBvoc.txt ~/ws/orbslam/src/ros2-ORB_SLAM2/src/monocular/[camera config yaml]```
 3. once map gui pops up run commands in terminal 2
